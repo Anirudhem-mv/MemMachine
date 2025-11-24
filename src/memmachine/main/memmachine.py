@@ -5,9 +5,9 @@ import logging
 from asyncio import Task
 from collections.abc import Coroutine
 from enum import Enum
-from typing import Any, Final, Protocol, cast
+from typing import Annotated, Any, Final, Protocol, cast
 
-from pydantic import BaseModel, InstanceOf, JsonValue
+from pydantic import BaseModel, Field, InstanceOf, JsonValue
 
 from memmachine.common.configuration import Configuration
 from memmachine.common.configuration.episodic_config import (
@@ -32,7 +32,6 @@ from memmachine.main.memmachine_errors import (
 )
 from memmachine.semantic_memory.semantic_model import FeatureIdT, SemanticFeature
 from memmachine.semantic_memory.semantic_session_resource import IsolationType
-from memmachine.server.api_v2.spec import AddMemoryResult
 
 logger = logging.getLogger(__name__)
 
@@ -61,11 +60,17 @@ class SessionData(Protocol):
 class MemoryType(Enum):
     """MemMachine type."""
 
-    Semantic = 0
-    Episodic = 1
+    Semantic = "episodic"
+    Episodic = "semantic"
 
 
 ALL_MEMORY_TYPES: Final[list[MemoryType]] = list(MemoryType)
+
+
+class AddMemoryResult(BaseModel):
+    """Response model for adding memories."""
+
+    uid: Annotated[str, Field(...)]
 
 
 class MemMachine:
